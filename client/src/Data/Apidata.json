@@ -1,0 +1,22 @@
+[
+    {
+        "id": 1,
+        "title": "Get all products",
+        "desc": "fakeStoreApi can be used with any type of shopping project that needs products, carts, and users in JSON format. you can use examples below to check how fakeStoreApi works and feel free to enjoy it in your awesome projects!"
+    },
+    {
+        "id": 2,
+        "title": "Get all products",
+        "desc": "fakeStoreApi can be used with any type of shopping project that needs products, carts, and users in JSON format. you can use examples below to check how fakeStoreApi works and feel free to enjoy it in your awesome projects!"
+    },
+    {
+        "id": 3,
+        "title": "Get all products",
+        "desc": "fakeStoreApi can be used with any type of shopping project that needs products, carts, and users in JSON format. you can use examples below to check how fakeStoreApi works and feel free to enjoy it in your awesome projects!"
+    },
+    {
+        "id": 4,
+        "title": "Get all products",
+        "desc": "fakeStoreApi can be used with any type of shopping project that needs products, carts, and users in JSON format. you can use examples below to check how fakeStoreApi works and feel free to enjoy it in your awesome projects!"
+    }
+]
