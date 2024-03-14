@@ -1,8 +1,22 @@
 import React from 'react'
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import styled from 'styled-components'
+import axios from 'axios'
 
 const Home = () => {
+    const navigate = useNavigate();
+
+    axios.defaults.withCredentials = true;
+    const handleLogout = () => {
+        axios.get("http://localhost:5000/auth/logout").then((res) => {
+            if (res.data.status) {
+                navigate("/login")
+            }
+        }).catch((err) => {
+            console.log(err);
+        })
+    }
+
     return (
         <HomeDiv>
             <HomeMainDiv>
@@ -10,7 +24,8 @@ const Home = () => {
                 <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Reiciendis, odit in obcaecati quia doloremque dicta incidunt laborum unde ratione similique. Vero libero voluptatum consequuntur sed! Nostrum veniam ducimus incidunt a alias enim numquam facilis, optio, debitis distinctio recusandae quae. Eum.</p>
                 <div className="docs">
                     <Link to='/docs'>Read Docs</Link>
-                    <Link to='/github' className='git_btn'>View on Github</Link>
+                    <Link to='/packages' className='git_btn'>View Packages</Link>
+                    <button onClick={handleLogout}>Logout</button>
                 </div>
             </HomeMainDiv>
         </HomeDiv>

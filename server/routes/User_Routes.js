@@ -1,5 +1,4 @@
 const bcrypt = require("bcrypt");
-
 const express = require("express");
 const User = require("../models/User-Auth");
 const router = express.Router();
@@ -27,7 +26,6 @@ router.post("/signup", async (req, res) => {
   return res.json({ status: true, message: "Record Regsitered Successfully!" });
 });
 
-
 router.post("/login", async (req, res) => {
   const { email, password } = req.body;
   const user = await User.findOne({ email });
@@ -42,11 +40,12 @@ router.post("/login", async (req, res) => {
     return res.json({ message: "Invalid password" });
   }
 
-  const token = jwt.sign({ username: user.username }, process.env.KEY, { expiresIn: "1h" });
-  res.cookie('token', token, { httpOnly: true, maxAge: 360000 });
-  return res.json({ status: true, message: "Login Successfully!" })
+  const token = jwt.sign({ username: user.username }, process.env.KEY, {
+    expiresIn: "1h",
+  });
+  res.cookie("token", token, { httpOnly: true, maxAge: 360000 });
+  return res.json({ status: true, message: "Login Successfully!" });
 });
-
 
 router.post("/forgot-password", async (req, res) => {
   const { email } = req.body;
@@ -58,32 +57,76 @@ router.post("/forgot-password", async (req, res) => {
       return res.json({ message: "User not registered!" });
     }
 
-    var transporter = nodemailer.createTransport({
-      service: 'gmail',
-      auth: {
-        user: 'youremail@gmail.com',
-        pass: 'yourpassword'
-      }
+    const token = jwt.sign({ id: user._id }, process.env.KEY, {
+      expiresIn: "5m",
     });
 
+    var transporter = nodemailer.createTransport({
+      service: "gmail",
+      auth: {
+        user: "akshay.bisht.dev@gmail.com",
+        pass: "7390nm@K",
+      },
+    });
+
+    const encodedToken = encodeURIComponent(token).replace(/\./g, "%2E");
     var mailOptions = {
-      from: 'youremail@gmail.com',
-      to: 'myfriend@yahoo.com',
-      subject: 'Sending Email using Node.js',
-      text: 'That was easy!'
+      from: "akshay.bisht.dev@gmail.com",
+      to: email,
+      subject: "Reset Password",
+      text: `http://localhost:3000/resetpassword/${encodedToken}`,
     };
 
     transporter.sendMail(mailOptions, function (error, info) {
       if (error) {
-        console.log(error);
+        return res.json({ message: "error sending email" });
       } else {
-        console.log('Email sent: ' + info.response);
+        return res.json({ status: true, message: "email sent" });
       }
     });
-
   } catch (error) {
     console.log(error);
   }
-})
+});
+
+router.post("/reset-password/:token", async (req, res) => {
+  const { token } = req.body;
+  const { password } = req.body;
+
+  try {
+    const decoded = await jwt.verify(token, process.env.KEY);
+    const id = decoded.id;
+    const hashpassword = await bcrypt.hash(password, 10);
+    await User.findByIdAndUpdate({ _id: id }, { password: hashpassword });
+    return res.json({
+      status: true,
+      message: "Updated Password Successfully!",
+    });
+  } catch (error) {
+    return res.json("Invalid token!");
+  }
+});
+
+const verifyUser = async (req, res, next) => {
+  try {
+    const token = req.cookies.token;
+    if (!token) {
+      return res.json({ status: false, message: "no token" });
+    }
+    const decoded = await jwt.verify(token, process.env.KEY);
+    next();
+  } catch (err) {
+    return res.json(err);
+  }
+};
+
+router.get("/verify", verifyUser, (req, res) => {
+  return res.json({ status: true, message: "authorized" });
+});
+
+router.get("/logout", (req, res) => {
+  res.clearCookie("token");
+  return res.json({ status: true });
+});
 
 module.exports = router;

@@ -1,25 +1,26 @@
 import axios from 'axios';
 import React, { useState } from 'react'
-import { Link } from 'react-router-dom'
+// import { Link } from 'react-router-dom'
 import styled from 'styled-components'
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 
 
-const ForgotPassword = () => {
-    const [email, setEmail] = useState("");
+const ResetPassword = () => {
+    const [password, setPassword] = useState("");
     const navigate = useNavigate();
+    const { token } = useParams();
 
 
     const handleSubmit = (e) => {
         e.preventDefault();
 
-        axios.post("http://localhost:5000/auth/forgot-password", {
-            email
+        axios.post("http://localhost:5000/auth/reset-password/" + token, {
+            password
         }).then((res) => {
             if (res.data.status) {
-                alert("check your email for reset password link");
                 navigate("/login");
             }
+            console.log(res.data);
         }).catch((err) => {
             console.log(err);
         })
@@ -30,26 +31,25 @@ const ForgotPassword = () => {
         <div>
             <ForgotDiv>
                 <ForgotData>
-                    <h1>Forgot Password</h1>
+                    <h1>Reset Password</h1>
                     <form onSubmit={handleSubmit}>
                         <ForgotFeild>
-                            <label htmlFor='email'>Email</label>
-                            <input type="text" name="email" id="email" onChange={(e) => setEmail(e.target.value)} placeholder='example@xyz.com' />
+                            <label htmlFor='password'>New Password</label>
+                            <input type="password" name="password" id="password" onChange={(e) => setPassword(e.target.value)} placeholder='Passsword' />
                         </ForgotFeild>
+
 
                         <ForgotFeild>
-                            <input type="submit" value="Send" />
+                            <input type="submit" value="Reset" />
                         </ForgotFeild>
                     </form>
-
-                    <p>Back to Login Page <Link to='/login'>Click Here</Link></p>
                 </ForgotData>
             </ForgotDiv>
         </div>
     )
 }
 
-export default ForgotPassword
+export default ResetPassword
 
 
 const ForgotDiv = styled.div`
